@@ -1,4 +1,8 @@
-BL_SDK_BASE ?= $(HOME)/bouffalo_sdk
+SDK_DEMO_PATH ?= $(abspath .)
+BL_SDK_BASE ?= $(abspath  ./../..)
 
-all:
-	make -C $(BL_SDK_BASE) CHIP=bl602 BOARD=bl602dk APP_DIR=$(CURDIR) APP=.
+export BL_SDK_BASE
+
+
+
+include $(BL_SDK_BASE)/project.build
