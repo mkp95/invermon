@@ -40,12 +40,7 @@ jobs:
       - name: Compile BL602 Firmware
         run: |
           export BL_SDK_BASE=$HOME/bouffalo_sdk
-          cmake -B build -G Ninja \
-            -DCHIP=bl602 \
-            -DBOARD=bl602dk \
-            -DCROSS_COMPILE=riscv-none-elf- \
-            -DCONFIG_TOOLCHAIN_PATH=$HOME/.toolchain/bin
-          cmake --build build
+          make CHIP=bl602 BOARD=bl602dk CROSS_COMPILE=riscv-none-elf-
 
       - name: Upload Binary Artifacts
         uses: actions/upload-artifact@v4
