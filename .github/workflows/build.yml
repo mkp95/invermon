@@ -40,6 +40,7 @@ jobs:
       - name: Compile BL602 Firmware
         run: |
           cmake -B build -G Ninja \
+            -DCMAKE_MODULE_PATH=$HOME/bouffalo_sdk/cmake \
             -DCMAKE_TOOLCHAIN_FILE=$HOME/bouffalo_sdk/cmake/toolchain.cmake \
             -DSDK_DIR=$HOME/bouffalo_sdk \
             -DCHIP=bl602 \
