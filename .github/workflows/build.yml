@@ -16,13 +16,11 @@ jobs:
       - name: Install Build Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build python3 python3-pip make git wget tar
+          sudo apt-get install -y cmake ninja-build python3 python3-pip make git
 
-      - name: Download & Extract RISC-V Toolchain
+      - name: Clone RISC-V Toolchain
         run: |
-          mkdir -p $HOME/toolchain
-          wget -q https://github.com/bouffalolab/toolchain_gcc_sifive_linux/archive/0681329c29d0eb2bf84f728c3a1d10e05aa313fa.tar.gz -O toolchain.tar.gz
-          tar -xzf toolchain.tar.gz -C $HOME/toolchain --strip-components=1
+          git clone --depth 1 https://github.com/bouffalolab/toolchain_gcc_sifive_linux.bin.git $HOME/toolchain
           echo "$HOME/toolchain/bin" >> $GITHUB_PATH
 
       - name: Clone Bouffalo SDK
