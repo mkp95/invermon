@@ -44,6 +44,7 @@ jobs:
           export BL_SDK_BASE=$HOME/bouffalo_sdk
           cmake -B build -G Ninja \
             -DCMAKE_TOOLCHAIN_FILE=$HOME/bouffalo_sdk/cmake/toolchain.cmake \
+            -DBL_SDK_BASE=$HOME/bouffalo_sdk \
             -DCHIP=bl602 \
             -DBOARD=bl602dk
           cmake --build build
