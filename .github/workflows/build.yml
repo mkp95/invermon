@@ -1,0 +1,45 @@
+name: BL602 Manual Compile
+
+on:
+  workflow_dispatch: # Manual execution only - does not run on git push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build python3 python3-pip make git wget
+
+      - name: Download & Extract RISC-V Toolchain
+        run: |
+          mkdir -p $HOME/toolchain
+          wget -q https://github.com/bouffalolab/toolchain_gcc_sifive_linux/archive/refs/heads/master.tar.gz -O toolchain.tar.gz
+          tar -xzf toolchain.tar.gz -C $HOME/toolchain --strip-components=1
+          echo "$HOME/toolchain/bin" >> $GITHUB_PATH
+
+      - name: Clone Bouffalo SDK
+        run: |
+          git clone --depth 1 https://github.com/bouffalolab/bouffalo_sdk.git $HOME/bouffalo_sdk
+          echo "BL_SDK_BASE=$HOME/bouffalo_sdk" >> $GITHUB_ENV
+
+      - name: Compile BL602 Firmware
+        run: |
+          make -C $HOME/bouffalo_sdk CHIP=bl602 BOARD=bl602dk APP_DIR=$GITHUB_WORKSPACE APP=app
+
+      - name: Upload Binary Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bl602-firmware-binaries
+          path: |
+            **/build/build_out/*.bin
+            **/build/build_out/*.elf
+            **/build/build_out/*.map
+          retention-days: 7
