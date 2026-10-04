@@ -32,14 +32,15 @@ jobs:
 
       - name: Compile BL602 Firmware
         run: |
-          make -C $HOME/bouffalo_sdk CHIP=bl602 BOARD=bl602dk APP_DIR=$GITHUB_WORKSPACE APP=app
+          cmake -B build -G Ninja -DCHIP=bl602 -DBOARD=bl602dk -DCROSS_COMPILE=riscv-none-elf-
+          cmake --build build
 
       - name: Upload Binary Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: bl602-firmware-binaries
           path: |
-            **/build/build_out/*.bin
-            **/build/build_out/*.elf
-            **/build/build_out/*.map
+            build/build_out/*.bin
+            build/build_out/*.elf
+            build/build_out/*.map
           retention-days: 7
