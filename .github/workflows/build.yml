@@ -10,8 +10,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Cache RISC-V Toolchain
         id: cache-toolchain
@@ -30,39 +28,26 @@ jobs:
       - name: Add Toolchain to Path
         run: echo "$HOME/.toolchain/bin" >> $GITHUB_PATH
 
-      - name: Cache Bouffalo SDK
-        id: cache-sdk
-        uses: actions/cache@v4
-        with:
-          path: ~/.bouffalo_sdk
-          key: bouffalo-sdk-main
-
-      - name: Clone Bouffalo SDK (If Cache Miss)
-        if: steps.cache-sdk.outputs.cache-hit != 'true'
-        run: |
-          git clone --depth 1 https://github.com/bouffalolab/bouffalo_sdk.git $HOME/.bouffalo_sdk
-
       - name: Install Build Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build python3 make
+          sudo apt-get install -y cmake ninja-build python3 make git
+
+      - name: Clone Bouffalo SDK
+        run: |
+          git clone --depth 1 https://github.com/bouffalolab/bouffalo_sdk.git $GITHUB_WORKSPACE/bouffalo_sdk
 
       - name: Compile BL602 Firmware
         run: |
-          export BL_SDK_BASE=$HOME/.bouffalo_sdk
-          cmake -B build -G Ninja \
-            -DCHIP=bl602 \
-            -DBOARD=bl602dk \
-            -DCROSS_COMPILE=riscv-none-elf- \
-            -DCONFIG_TOOLCHAIN_PATH=$HOME/.toolchain/bin
-          cmake --build build
+          export BL_SDK_BASE=$GITHUB_WORKSPACE/bouffalo_sdk
+          make -C $GITHUB_WORKSPACE/bouffalo_sdk CHIP=bl602 BOARD=bl602dk APP_DIR=$GITHUB_WORKSPACE APP=invermon CROSS_COMPILE=riscv-none-elf-
 
       - name: Upload Binary Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: bl602-firmware-binaries
           path: |
-            build/build_out/*.bin
-            build/build_out/*.elf
-            build/build_out/*.map
+            **/build/build_out/*.bin
+            **/build/build_out/*.elf
+            **/build/build_out/*.map
           retention-days: 7
