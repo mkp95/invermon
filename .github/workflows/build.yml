@@ -1,7 +1,7 @@
 name: BL602 Manual Compile
 
 on:
-  workflow_dispatch: # Manual execution only - does not run on git push
+  workflow_dispatch:
 
 jobs:
   build:
@@ -16,12 +16,12 @@ jobs:
       - name: Install Build Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build python3 python3-pip make git wget
+          sudo apt-get install -y cmake ninja-build python3 python3-pip make git wget tar
 
       - name: Download & Extract RISC-V Toolchain
         run: |
           mkdir -p $HOME/toolchain
-          wget -q https://github.com/bouffalolab/toolchain_gcc_sifive_linux/archive/refs/heads/master.tar.gz -O toolchain.tar.gz
+          wget -q https://github.com/bouffalolab/toolchain_gcc_sifive_linux/archive/0681329c29d0eb2bf84f728c3a1d10e05aa313fa.tar.gz -O toolchain.tar.gz
           tar -xzf toolchain.tar.gz -C $HOME/toolchain --strip-components=1
           echo "$HOME/toolchain/bin" >> $GITHUB_PATH
 
